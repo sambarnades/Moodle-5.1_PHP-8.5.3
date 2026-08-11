@@ -1,17 +1,26 @@
 # Use the official PHP 8.5.3 Apache image as the base
 FROM php:8.5.8-apache
 
+ARG GIT_REMOTE_REPO_URL=${GIT_REMOTE_REPO_URL}
+
 # Set the working directory inside the container
 WORKDIR /var/www/html/
 
 # Copy Apache configuration files for Moodle
-ADD https://${GIT_REMOTE_REPO_URL}/apache_configuration/moodle_listener.conf /etc/apache2/moodle_listener.conf
+ADD ${GIT_REMOTE_REPO_URL}/apache_configuration/moodle_listener.conf /etc/apache2/moodle_listener.conf
 RUN echo "<VirtualHost *:80>" >> /etc/apache2/sites-available/000-default.conf && \
     echo "Include /etc/apache2/moodle_listener.conf" >> /etc/apache2/sites-available/000-default.conf && \
     echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf
 
-# Copy Moodle 5.2 stable directly into the html directory
-COPY ./moodle /var/www/html/moodle/
+# Set permissions for the Moodle directory
+RUN mkdir /var/www/html/moodle && \
+    chown -R root:www-data /var/www/html/moodle/ && \
+    chmod 0770 /var/www/html/moodle/
+
+# Copy Moodle 5.2 stable content directly into the html directory
+COPY ./moodle/ /var/www/html/moodle/
+ 
+# Copy the setup script into the container
 COPY ./setup.sh /var/www/html/
 
 # Install system dependencies required for Moodle and PHP extensions

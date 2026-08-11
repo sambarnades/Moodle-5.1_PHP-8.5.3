@@ -1,9 +1,5 @@
 #!/bin/bash
-set -e
-
-# Set permissions for the Moodle directory
-chown -R root:www-data /var/www/html/moodle/ && \
-chmod 0770 /var/www/html/moodle/
+set -x
 
 # Create Moodle data directory with proper permissions
 # root owns the directory, www-data/Apache group has write access, good for maintenance
@@ -18,30 +14,58 @@ echo ServerName localhost >> /etc/apache2/apache2.conf
 rm -f /etc/apache2/sites-enabled/moodle_listeners.conf
 
 # Entrypoint script for Moodle container
-
 echo "Installing Moodle..."
 
+# =========================================================================
+# MOODLE INSTALLATION (CLI)
+# ------------------------------------------------------------------------
+# Executes Moodle's non-interactive installation via admin/cli/install.php.
+# All parameters use default values for Docker environment.
+#
+# PARAMETERS:
+#   --wwwroot="http://127.0.0.1"       # Base URL for Moodle (http:// or https://)
+#   --lang="fr"                        # Interface language (ISO 639-1: fr, en, es, etc.)
+#   --dataroot="/data/moodledata"     # Data directory (MUST be outside webroot)
+#   --dbtype="pgsql"                  # Database type: pgsql, mysqli, mariadb, oci, sqlsrv
+#   --dbhost="postgres"               # Database host (Docker service name or IP)
+#   --dbname="moodle"                 # Database name
+#   --dbuser="moodleadmin"            # Database username
+#   --dbpass="moodlepass"             # Database password
+#   --adminuser="moodle"              # Moodle admin username
+#   --adminpass="moodlepass"          # Moodle admin password
+#   --adminemail="admin@moodle.com"  # Administrator email (required)
+#   --supportemail="support@moodle.com" # Support email (optional)
+#   --agree-license                    # Accept Moodle GPL license (REQUIRED)
+#   --non-interactive                 # Disable interactive prompts (REQUIRED)
+#   --fullname="Moodle"               # Full site name
+#   --shortname="Moodle"              # Short site name (displayed in browser tabs)
+#
+# SECURITY NOTE: For production, replace hardcoded passwords with environment
+# variables (e.g., --dbpass="${POSTGRES_PASSWORD}", --adminpass="${ADMIN_PASSWORD}").
+# Do NOT commit passwords to version control.
+# ------------------------------------------------------------------------
+
 php /var/www/html/moodle/admin/cli/install.php \
-  --wwwroot="http://${MOODLE_ROOT:-127.0.0.1}" \
-  --lang="${MOODLE_LANG:-fr}" \
+  --wwwroot="http://127.0.0.1" \
+  --lang="fr" \
   --dataroot="/data/moodledata" \
-  --dbtype="${MOODLE_DBTYPE:-pgsql}" \
-  --dbhost="${MOODLE_DBHOST:-postgres}" \
-  --dbname="${MOODLE_DBNAME:-moodle}" \
-  --dbuser="${MOODLE_DBUSER:-moodleadmin}" \
-  --dbpass="${MOODLE_DBPASS:-moodlepass}" \
-  --adminuser="${MOODLE_ADMIN_USER:-moodle}" \
-  --adminpass="${MOODLE_ADMIN_PASS:-moodlepass}" \
-  --adminemail="${MOODLE_ADMIN_EMAIL:-admin@moodle.com}" \
-  --supportemail="${MOODLE_SUPPORT_EMAIL:-support@moodle.com}" \
+  --dbtype="pgsql" \
+  --dbhost="postgres" \
+  --dbname="moodle" \
+  --dbuser="moodleadmin" \
+  --dbpass="moodlepass" \
+  --adminuser="moodle" \
+  --adminpass="moodlepass" \
+  --adminemail="admin@moodle.com" \
+  --supportemail="support@moodle.com" \
   --agree-license \
   --non-interactive \
-  --fullname="${MOODLE_FULLNAME:-Moodle}" \
-  --shortname="${MOODLE_SHORTNAME:-Moodle}"
+  --fullname="Moodle" \
+  --shortname="Moodle"
 
   # Set proper permissions for config.php
-  chown root:www-data /var/www/html/moodle/config.php && \
-  chmod 0640 /var/www/html/moodle/config.php
+  chown root:www-data /var/www/html/moodle/config.php
+  chmod 770 /var/www/html/moodle/config.php
 
   echo "Moodle installed successfully!"
 

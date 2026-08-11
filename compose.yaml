@@ -4,13 +4,13 @@ networks:
 services:
     php_server:
       container_name: php_server
-      env_file:
-        - .env
       environment:
         - GIT_REMOTE_REPO_URL=${GIT_REMOTE_REPO_URL}
       build:
         context: .
         dockerfile: php_server.Dockerfile
+        args:
+        - GIT_REMOTE_REPO_URL=${GIT_REMOTE_REPO_URL}
       ports:
         - 80:80
         - 443:443
