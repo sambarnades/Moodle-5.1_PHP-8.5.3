@@ -1,0 +1,4 @@
+[submodule "Moodle"]
+	path = moodle
+	url = https://github.com/moodle/moodle
+	branch = MOODLE_502_STABLE
