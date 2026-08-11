@@ -47,7 +47,7 @@ docker compose up -d
 
 See `.env.example` for the complete template with all available variables.
 
-> ⚠️ **Important**: The `GIT_REMOTE_REPO_URL` variable must use the raw GitHub URL format: `https://raw.githubusercontent.com/sambarnades/Moodle-5.2_PHP-8.5.7` (not the `/blob/` URL) to avoid downloading HTML content instead of configuration files.
+> ⚠️ **Important**: The `GIT_REMOTE_REPO_URL` variable must use the raw GitHub URL format: `https://raw.githubusercontent.com/sambarnades/MoPgR` (not the `/blob/` URL) to avoid downloading HTML content instead of configuration files.
 
 > ⚠️ **Security Note**: Never commit `.env` to version control (it's in `.gitignore`). Change all default passwords before production use.
 
