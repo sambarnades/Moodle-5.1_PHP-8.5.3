@@ -19,7 +19,6 @@ cp .env.example .env
 # 2. Place Moodle source code in ./moodle/ directory
 
 # 3. Start all services
-cd dev
 docker compose up -d
 
 # 4. Access Moodle
@@ -155,9 +154,6 @@ The `setup.sh` script performs the following operations:
 ### Using Docker Compose
 
 ```bash
-# Navigate to project directory
-cd dev
-
 # Build and start all services
 docker compose up -d --build
 
