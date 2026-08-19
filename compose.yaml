@@ -3,7 +3,7 @@ networks:
   moodle-network:
 services:
     php_server:
-      container_name: php_server
+      container_name: php_server_$BRANCH
       environment:
         - GIT_REMOTE_REPO_URL=${GIT_REMOTE_REPO_URL}
       build:
@@ -12,8 +12,8 @@ services:
         args:
         - GIT_REMOTE_REPO_URL=${GIT_REMOTE_REPO_URL}
       ports:
-        - 80:80
-        - 443:443
+        - $PUBLIC_IP:80:80
+        - $PUBLIC_IP:443:443
       healthcheck:
         test: ["CMD", "curl", "-f", "http://${MOODLE_ROOT}:80/" ]
         interval: 30s
@@ -27,7 +27,7 @@ services:
       volumes:
        - ./docker_data/moodledata:/data/moodledata
     postgres:
-      container_name: postgres
+      container_name: postgres_$BRANCH
       image: postgres:${POSTGRES_VERSION}
       restart: always
       # set shared memory limit when using docker compose
@@ -52,7 +52,7 @@ services:
       volumes:
         - ./docker_data/postgres:/var/lib/postgresql/18/docker
     pgadmin:
-      container_name: pgadmin
+      container_name: pgadmin_$BRANCH
       image: elestio/pgadmin:latest
       restart: always
       environment:
@@ -60,14 +60,14 @@ services:
         PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD}
         PGADMIN_LISTEN_PORT: 8443
       ports:
-        - 8443:8443
+        - $PUBLIC_IP:8443:8443
       depends_on:
         postgres:
           condition: service_healthy
       volumes:
       - ./docker_data/pgadmin/servers.json:/docker_data/pgadmin4/servers.json
     redis:
-      container_name: redis
+      container_name: redis_$BRANCH
       image: redis:${REDIS_VERSION}
       restart: unless-stopped
       environment:
@@ -90,14 +90,14 @@ services:
       volumes:
         - ./docker_data/moodle_redis:/docker_data/redis-data
     redisinsight:
-      container_name: redisinsight
+      container_name: redisinsight_$BRANCH
       image: redis/redisinsight:${REDISINSIGHT_VERSION}
       restart: always
       environment:
         RI_APP_PORT: 5540
         RI_APP_HOST: 0.0.0.0
       ports:
-        - 5540:5540
+        - $PUBLIC_IP:5540:5540
       volumes:
         - ./docker_data/moodle_redisinsight:/docker_data/redisinsight-db
 volumes:
