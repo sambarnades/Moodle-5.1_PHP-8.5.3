@@ -11,9 +11,6 @@ services:
         dockerfile: php_server.Dockerfile
         args:
         - GIT_REMOTE_REPO_URL=${GIT_REMOTE_REPO_URL}
-      ports:
-        - $PUBLIC_IP:80:80
-        - $PUBLIC_IP:443:443
       healthcheck:
         test: ["CMD", "curl", "-f", "http://${MOODLE_ROOT}:80/" ]
         interval: 30s
@@ -59,8 +56,6 @@ services:
         PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
         PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD}
         PGADMIN_LISTEN_PORT: 8443
-      ports:
-        - $PUBLIC_IP:8443:8443
       depends_on:
         postgres:
           condition: service_healthy
@@ -96,8 +91,6 @@ services:
       environment:
         RI_APP_PORT: 5540
         RI_APP_HOST: 0.0.0.0
-      ports:
-        - $PUBLIC_IP:5540:5540
       volumes:
         - ./docker_data/moodle_redisinsight:/docker_data/redisinsight-db
 volumes:
